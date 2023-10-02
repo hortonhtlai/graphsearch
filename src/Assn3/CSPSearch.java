@@ -1,10 +1,14 @@
 package Assn3;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class CSPSearch {
     private String[] assignOrder = {"A", "B", "C", "D", "E", "F", "G", "H"};
     private int[] assignValues;
+    private List<String> solutionList;
+    private int numFailures;
 
     private boolean violateConstraints() {
         int A = getValue("A");
@@ -43,7 +47,7 @@ public class CSPSearch {
     }
 
     private boolean isSolution() {
-        for (int i = 0; i < assignValues.length; i++) {
+        for (int i = 0; i < assignOrder.length; i++) {
             if (assignValues[i] <= 0) return false;
         }
         return true;
@@ -53,10 +57,24 @@ public class CSPSearch {
         for (int i = 0; i < depth; i++) System.out.print("    ");
     }
 
+    private void addSolution() {
+        String solution = "";
+        for (int i = 0; i < assignOrder.length; i++) {
+            solution = solution + assignOrder[i] + "=" + assignValues[i] + " ";
+        }
+        solutionList.add(solution);
+    }
+
     public void DFSpruning() {
         assignValues = new int[assignOrder.length];
         Arrays.fill(assignValues, 0);
+        solutionList = new ArrayList<>();
+        numFailures = 0;
         DFSpruning(0);
+        for (int i = 0; i < solutionList.size(); i++) {
+            System.out.println("Solution " + (i + 1) + ": " + solutionList.get(i));
+        }
+        System.out.println("Number of failures: " + numFailures);
     }
 
     private void DFSpruning(int depth) {
@@ -69,9 +87,11 @@ public class CSPSearch {
                     DFSpruning(depth + 1);
                 } else {
                     System.out.println("solution");
+                    addSolution();
                 }
             } else {
                 System.out.println("failure");
+                numFailures++;
             }
         }
         assignValues[depth] = 0;
