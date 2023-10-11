@@ -10,6 +10,7 @@ public class CSPSearch {
     private List<String> solutionList;
     private int numFailures;
 
+    // Checks every constraint
     private boolean violateConstraints() {
         int A = getValue("A");
         int B = getValue("B");
@@ -39,6 +40,7 @@ public class CSPSearch {
         return false;
     }
 
+    // returns the value of the variable
     private int getValue(String variable) {
         for (int i = 0; i < assignOrder.length; i++) {
             if (assignOrder[i].equals(variable)) return assignValues[i];
@@ -46,6 +48,7 @@ public class CSPSearch {
         return 0;
     }
 
+    // checks if every variable is assigned a value
     private boolean isSolution() {
         for (int i = 0; i < assignOrder.length; i++) {
             if (assignValues[i] <= 0) return false;
@@ -53,10 +56,12 @@ public class CSPSearch {
         return true;
     }
 
+    // prints indentation for deeper levels of tree
     private void printIndent(int depth) {
         for (int i = 0; i < depth; i++) System.out.print("    ");
     }
 
+    // adds solution to list for print when DFS ends
     private void addSolution() {
         String solution = "";
         for (int i = 0; i < assignOrder.length; i++) {
@@ -65,6 +70,8 @@ public class CSPSearch {
         solutionList.add(solution);
     }
 
+    // initializes DFS and prints solutions and failures when DFS ends
+    // assignValues[i] = 0 if variable in assignOrder[i] is unassigned
     public void DFSpruning() {
         assignValues = new int[assignOrder.length];
         Arrays.fill(assignValues, 0);
@@ -72,16 +79,20 @@ public class CSPSearch {
         numFailures = 0;
         DFSpruning(0);
         for (int i = 0; i < solutionList.size(); i++) {
-            System.out.println("Solution " + (i + 1) + ": " + solutionList.get(i));
+            System.out.println("Solution " + (i+1)
+                    + ": " + solutionList.get(i));
         }
         System.out.println("Number of failures: " + numFailures);
     }
 
+    // performs DFS by recursion
     private void DFSpruning(int depth) {
         for (int i = 1; i < 5; i++) {
+            // assign i to variable at current level of tree
             assignValues[depth] = i;
             if (assignValues[depth] > 1) printIndent(depth);
-            System.out.print(assignOrder[depth] + "=" + assignValues[depth] + " ");
+            System.out.print(assignOrder[depth] + "="
+                    + assignValues[depth] + " ");
             if (!violateConstraints()) {
                 if (!isSolution()) {
                     DFSpruning(depth + 1);
@@ -94,6 +105,7 @@ public class CSPSearch {
                 numFailures++;
             }
         }
+        // unassign variable to backtrack to shallower levels of tree
         assignValues[depth] = 0;
     }
 }
