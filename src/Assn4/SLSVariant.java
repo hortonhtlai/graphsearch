@@ -166,6 +166,8 @@ public class SLSVariant {
             }
             initPopulation = newGeneration;
             generationNum++;
+            fillFitnessScore();
+            fillParentLikelihood();
             printPopulationInfo();
         }
     }
