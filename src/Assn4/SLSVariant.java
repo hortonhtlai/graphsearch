@@ -3,29 +3,29 @@ package Assn4;
 import java.util.Arrays;
 
 public class SLSVariant {
-    private int[][] initialPopulation = {{1, 1, 1, 1, 1, 1, 1, 1},
-                                         {2, 2, 2, 2, 2, 2, 2, 2},
-                                         {3, 3, 3, 3, 3, 3, 3, 3},
-                                         {4, 4, 4, 4, 4, 4, 4, 4},
-                                         {1, 2, 3, 4, 1, 2, 3, 4},
-                                         {4, 3, 2, 1, 4, 3, 2, 1},
-                                         {1, 2, 1, 2, 1, 2, 1, 2},
-                                         {3, 4, 3, 4, 3, 4, 3, 4}};
+    private int[][] initPopulation = {{1, 1, 1, 1, 1, 1, 1, 1},
+                                      {2, 2, 2, 2, 2, 2, 2, 2},
+                                      {3, 3, 3, 3, 3, 3, 3, 3},
+                                      {4, 4, 4, 4, 4, 4, 4, 4},
+                                      {1, 2, 3, 4, 1, 2, 3, 4},
+                                      {4, 3, 2, 1, 4, 3, 2, 1},
+                                      {1, 2, 1, 2, 1, 2, 1, 2},
+                                      {3, 4, 3, 4, 3, 4, 3, 4}};
     private int generationNum;
     private int[] fitnessScores;
     private double[] parentLikelihood;
     private int[][] newGeneration;
 
     private void fillFitnessScore() {
-        for (int i = 0; i < initialPopulation.length; i++) {
-            int A = initialPopulation[i][0];
-            int B = initialPopulation[i][1];
-            int C = initialPopulation[i][2];
-            int D = initialPopulation[i][3];
-            int E = initialPopulation[i][4];
-            int F = initialPopulation[i][5];
-            int G = initialPopulation[i][6];
-            int H = initialPopulation[i][7];
+        for (int i = 0; i < initPopulation.length; i++) {
+            int A = initPopulation[i][0];
+            int B = initPopulation[i][1];
+            int C = initPopulation[i][2];
+            int D = initPopulation[i][3];
+            int E = initPopulation[i][4];
+            int F = initPopulation[i][5];
+            int G = initPopulation[i][6];
+            int H = initPopulation[i][7];
             int fitnessScore = 0;
             if (A > G) fitnessScore++;
             if (A <= H) fitnessScore++;
@@ -78,38 +78,40 @@ public class SLSVariant {
             parent2 = sampleFromDistribution(parentLikelihood);
         }
         for (int i = 0; i < newGeneration[0].length; i++) {
-            newGeneration[2 * pairNum][i] = initialPopulation[parent1][i];
-            newGeneration[2 * pairNum + 1][i] = initialPopulation[parent2][i];
+            newGeneration[2*pairNum][i] = initPopulation[parent1][i];
+            newGeneration[2*pairNum + 1][i] = initPopulation[parent2][i];
         }
+
         System.out.print("Selection: ");
-        for (int i = 0; i < newGeneration[0].length; i++) {
-            System.out.print(" " + newGeneration[2 * pairNum][i]);
-        }
-        System.out.print("    ");
-        for (int i = 0; i < newGeneration[0].length; i++) {
-            System.out.print(" " + newGeneration[2 * pairNum + 1][i]);
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < newGeneration[0].length; j++) {
+                System.out.print(" " + newGeneration[2*pairNum + i][j]);
+            }
+            System.out.print("    ");
         }
         System.out.println();
     }
 
     private void pairCrossover(int pairNum) {
-        double[] crossoverPoints = new double[initialPopulation.length - 1];
+        double[] crossoverPoints = new double[initPopulation.length - 1];
         Arrays.fill(crossoverPoints, 1.0 / crossoverPoints.length);
         int crossoverPoint = sampleFromDistribution(crossoverPoints);
         for (int i = crossoverPoint + 1; i < newGeneration[0].length; i++) {
-            int temp = newGeneration[2 * pairNum][i];
-            newGeneration[2 * pairNum][i] = newGeneration[2 * pairNum + 1][i];
-            newGeneration[2 * pairNum + 1][i] = temp;
+            int temp = newGeneration[2*pairNum][i];
+            newGeneration[2*pairNum][i] = newGeneration[2*pairNum + 1][i];
+            newGeneration[2*pairNum + 1][i] = temp;
         }
+
         System.out.print("Crossover: ");
-        for (int i = 0; i < newGeneration[0].length; i++) {
-            System.out.print(" " + newGeneration[2 * pairNum][i]);
-            if (i == crossoverPoint) System.out.print(" /");
-        }
-        System.out.print("    ");
-        for (int i = 0; i < newGeneration[0].length; i++) {
-            System.out.print(" " + newGeneration[2 * pairNum + 1][i]);
-            if (i == crossoverPoint) System.out.print(" /");
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < newGeneration[0].length; j++) {
+                if (j - 1 == crossoverPoint) {
+                    System.out.print("|" + newGeneration[2*pairNum + i][j]);
+                } else {
+                    System.out.print(" " + newGeneration[2*pairNum + i][j]);
+                }
+            }
+            System.out.print("    ");
         }
         System.out.println();
     }
@@ -117,24 +119,28 @@ public class SLSVariant {
     private void pairMutation(int pairNum) {
         System.out.print("Mutation:  ");
         for (int i = 0; i < 2; i++) {
-            int mutationPoint = -1;
+            int mutationPoint = -10;
             if (Math.random() < 0.3) {
-                double[] mutationPoints = new double[initialPopulation.length];
+                double[] mutationPoints = new double[initPopulation.length];
                 Arrays.fill(mutationPoints, 1.0 / mutationPoints.length);
                 mutationPoint = sampleFromDistribution(mutationPoints);
-                double[] mutationValues = new double[initialPopulation.length];
+                double[] mutationValues = new double[initPopulation.length];
                 Arrays.fill(mutationValues, 1.0 / 4);
-                int mutationValue = newGeneration[2 * pairNum + i][mutationPoint];
-                while (mutationValue == newGeneration[2 * pairNum + i][mutationPoint]) {
+                int mutationValue = newGeneration[2*pairNum + i]
+                        [mutationPoint];
+                while (mutationValue == newGeneration[2*pairNum + i]
+                        [mutationPoint]) {
                     mutationValue = sampleFromDistribution(mutationValues) + 1;
                 }
-                newGeneration[2 * pairNum + i][mutationPoint] = mutationValue;
+                newGeneration[2*pairNum + i][mutationPoint] = mutationValue;
             }
             for (int j = 0; j < newGeneration[0].length; j++) {
                 if (j == mutationPoint) {
-                    System.out.print(" (" + newGeneration[2 * pairNum + i][j] + ")");
+                    System.out.print("(" + newGeneration[2*pairNum + i][j] + ")");
+                } else if (j-1 == mutationPoint) {
+                    System.out.print(newGeneration[2*pairNum + i][j]);
                 } else {
-                    System.out.print(" " + newGeneration[2 * pairNum + i][j]);
+                    System.out.print(" " + newGeneration[2*pairNum + i][j]);
                 }
             }
             System.out.print("    ");
@@ -144,20 +150,21 @@ public class SLSVariant {
 
     public void geneticAlg() {
         generationNum = 0;
-        fitnessScores = new int[initialPopulation.length];
-        parentLikelihood = new double[initialPopulation.length];
+        fitnessScores = new int[initPopulation.length];
+        parentLikelihood = new double[initPopulation.length];
         fillFitnessScore();
         fillParentLikelihood();
         printPopulationInfo();
         while (generationNum < 5) {
-            newGeneration = new int[initialPopulation.length][initialPopulation[0].length];
-            for (int i = 0; i < initialPopulation.length / 2; i++) {
+            newGeneration = new int[initPopulation.length]
+                    [initPopulation[0].length];
+            for (int i = 0; i < initPopulation.length / 2; i++) {
                 System.out.println("Pair " + (i + 1) + ":");
                 pairSelection(i);
                 pairCrossover(i);
                 pairMutation(i);
             }
-            initialPopulation = newGeneration;
+            initPopulation = newGeneration;
             generationNum++;
             printPopulationInfo();
         }
@@ -165,12 +172,13 @@ public class SLSVariant {
 
     private void printPopulationInfo() {
         System.out.println("\nGeneration " + generationNum + ":");
-        for (int i = 0; i < initialPopulation.length; i++) {
+        for (int i = 0; i < initPopulation.length; i++) {
             System.out.print("State " + (i + 1) + ":");
-            for (int j = 0; j < initialPopulation[0].length; j++) {
-                System.out.print(" " + initialPopulation[i][j]);
+            for (int j = 0; j < initPopulation[0].length; j++) {
+                System.out.print(" " + initPopulation[i][j]);
             }
-            System.out.println("   Fitness score: " + fitnessScores[i] + "    Parent likelihood: " + parentLikelihood[i]);
+            System.out.println("   Fitness score: " + fitnessScores[i]
+                    + "    Parent likelihood: " + parentLikelihood[i]);
         }
     }
 }
